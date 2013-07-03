@@ -42,8 +42,10 @@ public class WebAPI {
 	
 	public Uri getAllGamesUri() {
 		Uri uri = null;
+		// TODO change to acquiring latitude and longitude
+		String params = "?lat=0&lon=0";
 		try {
-			uri = Uri.parse(base + getBaseAPI().links.games.href);
+			uri = Uri.parse(base + getBaseAPI().links.games.href + params);
 		}
 		catch (Exception e) {
 			uri = Uri.parse(base);

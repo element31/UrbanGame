@@ -3,6 +3,7 @@ package com.blstream.urbangame;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -19,6 +20,7 @@ import com.blstream.urbangame.helpers.ExpandableListViewPropertiesSetter;
 import com.blstream.urbangame.web.WebHighLevel;
 import com.blstream.urbangame.web.WebHighLevelInterface;
 import com.blstream.urbangame.webserver.ServerResponseHandler;
+import com.blstream.urbangame.webserver.WebResponse;
 import com.blstream.urbangame.webserver.WebServerNotificationListener;
 
 public class GamesListActivity extends AbstractGamesListActivity implements OnChildClickListener,
@@ -107,5 +109,6 @@ public class GamesListActivity extends AbstractGamesListActivity implements OnCh
 	public void onWebServerResponse(Message message) {
 		// TODO implement on response behavior
 		// FIXME refreshing adapters should be moved here
+		Log.i("DOWNLOAD GAMES", ((WebResponse) message.obj).getResponse());
 	}
 }
