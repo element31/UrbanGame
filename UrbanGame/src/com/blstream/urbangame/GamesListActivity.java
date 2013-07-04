@@ -1,5 +1,11 @@
 package com.blstream.urbangame;
 
+import java.util.Date;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
@@ -15,6 +21,8 @@ import com.actionbarsherlock.view.MenuItem.OnActionExpandListener;
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.blstream.urbangame.adapters.GamesListAdapter;
+import com.blstream.urbangame.database.Database;
+import com.blstream.urbangame.database.entity.UrbanGame;
 import com.blstream.urbangame.database.entity.UrbanGameShortInfo;
 import com.blstream.urbangame.helpers.ExpandableListViewPropertiesSetter;
 import com.blstream.urbangame.web.WebHighLevel;
@@ -110,5 +118,50 @@ public class GamesListActivity extends AbstractGamesListActivity implements OnCh
 		// TODO implement on response behavior
 		// FIXME refreshing adapters should be moved here
 		Log.i("DOWNLOAD GAMES", ((WebResponse) message.obj).getResponse());
+		tempJSonParse(((WebResponse) message.obj).getResponse());
+	}
+	
+	private void tempJSonParse(String jsonString) {
+		JSONObject jsonObject;
+		UrbanGame urbanGame, urbanGame2;
+		Database database = new Database(this);
+		try {
+			jsonObject = new JSONObject(jsonString);
+			JSONArray jsonArray = jsonObject.getJSONArray("_embedded");
+			for (int i = 0; i < jsonArray.length(); i++) {
+				jsonObject = jsonArray.getJSONObject(i);
+				urbanGame = new UrbanGame();
+				urbanGame.setID(jsonObject.getLong("gid"));
+				urbanGame.setGameVersion(jsonObject.getDouble("version"));
+				urbanGame.setTitle(jsonObject.getString("name"));
+				urbanGame.setStartDate(new Date(jsonObject.getLong("startTime")));
+				urbanGame.setEndDate(new Date(jsonObject.getLong("endTime")));
+				urbanGame.setOperatorName(jsonObject.getString("operatorName"));
+				// dummy
+				urbanGame.setPlayers(0);
+				urbanGame.setDescription("");
+				urbanGame.setWinningStrategy("");
+				urbanGame.setLocation("");
+				urbanGame.setDetailsLink("");
+				urbanGame.setReward(false);
+				urbanGame2 = database.getGameInfo(jsonObject.getLong("gid"));
+				if (urbanGame2 == null) {
+					if (database.insertGameInfo(urbanGame)) {
+						Log.i("PARSING", "added a game");
+					}
+					else {
+						Log.i("PARSING", "did not add a game");
+					}
+				}
+				//TODO check if different
+				
+			}
+		}
+		catch (JSONException e) {
+			Log.e("JSONparse games list", e.getMessage());
+		}
+		database.closeDatabase();
+		adapter.updateData();
+		Log.i("PARSING", "finished");
 	}
 }

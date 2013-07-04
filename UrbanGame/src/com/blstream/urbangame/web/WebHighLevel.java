@@ -36,7 +36,7 @@ public class WebHighLevel implements WebHighLevelInterface {
 	@Override
 	public void downloadGamesList() {
 		if (isOnline()) {
-			webServer.downloadGamesList();
+			//webServer.downloadGamesList();
 		}
 		new DemoData(context).insertDataIntoDatabase();
 	}

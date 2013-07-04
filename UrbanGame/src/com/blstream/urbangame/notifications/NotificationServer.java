@@ -303,11 +303,11 @@ public class NotificationServer implements WebServerNotificationListener {
 		List<UrbanGameShortInfo> gameList = database.getAllGamesShortInfo();
 		if (gameList != null) {
 			game = gameList.get(r.nextInt(gameList.size()));
-		}
-		
-		List<Task> taskList = database.getTasksForGame(game.getID());
-		if (taskList != null) {
-			task = taskList.get(r.nextInt(taskList.size()));
+			
+			List<Task> taskList = database.getTasksForGame(game.getID());
+			if (taskList != null) {
+				task = taskList.get(r.nextInt(taskList.size()));
+			}
 		}
 		
 		if (r.nextBoolean() || game == null) { //game
@@ -318,23 +318,25 @@ public class NotificationServer implements WebServerNotificationListener {
 				notifyGameChanged(newGame, newGame);
 			}
 			else { //update game
-				if (r.nextBoolean()) { // simulate that game is over
-				
-					Log.i(TAG, "Mock simulate game is over");
-					if (r.nextBoolean()) {
-						notifyGameWon(database.getGameInfo(game.getID()));
-					}
-					else {
-						notifyGameLost(database.getGameInfo(game.getID()));
-					}
+				if (game != null) {
+					if (r.nextBoolean()) { // simulate that game is over
 					
-				}
-				else // simulate that game content changed
-				{
-					Log.i(TAG, "Mock simulate game changed");
-					UrbanGame urbanGame = database.getGameInfo(game.getID());
-					UrbanGame updatedGame = updateGameDataContent(r, urbanGame);
-					notifyGameChanged(urbanGame, updatedGame);
+						Log.i(TAG, "Mock simulate game is over");
+						if (r.nextBoolean()) {
+							notifyGameWon(database.getGameInfo(game.getID()));
+						}
+						else {
+							notifyGameLost(database.getGameInfo(game.getID()));
+						}
+						
+					}
+					else // simulate that game content changed
+					{
+						Log.i(TAG, "Mock simulate game changed");
+						UrbanGame urbanGame = database.getGameInfo(game.getID());
+						UrbanGame updatedGame = updateGameDataContent(r, urbanGame);
+						notifyGameChanged(urbanGame, updatedGame);
+					}
 				}
 			}
 		}

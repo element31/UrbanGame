@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,7 +142,13 @@ public class GamesListAdapter extends BaseExpandableListAdapter {
 		ViewHolder holder = (ViewHolder) row.getTag();
 		
 		// Set up all fields
-		holder.imageViewGameLogo.setImageDrawable(gameInfo.getGameLogoDrawable(context.getResources()));
+		Drawable gameLogo = gameInfo.getGameLogoDrawable(context.getResources());
+		if (gameLogo != null) {
+			holder.imageViewGameLogo.setImageDrawable(gameLogo);
+		}
+		else {
+			holder.imageViewGameLogo.setImageDrawable(context.getResources().getDrawable(R.drawable.default_game_icon));
+		}
 		if (gameInfo.getReward()) {
 			holder.imageViewGamePrize.setImageResource(R.drawable.prize);
 		}
@@ -170,6 +177,7 @@ public class GamesListAdapter extends BaseExpandableListAdapter {
 	
 	@Override
 	public int getChildrenCount(int groupPosition) {
+		if (data == null) return 0;
 		return data.size();
 	}
 	
