@@ -20,7 +20,7 @@ public class PlayerGameSpecific {
 	 * @param playerEmail
 	 * @param gameID
 	 * @param changes
-	 * @paran hasChanges
+	 * @param hasChanges
 	 */
 	public PlayerGameSpecific(Integer rank, String playerEmail, Long gameID, String changes, Boolean hasChanges) {
 		this.rank = rank;

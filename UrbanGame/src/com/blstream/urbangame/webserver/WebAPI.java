@@ -37,15 +37,17 @@ public class WebAPI {
 		
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		base = sharedPrefs.getString(context.getString(R.string.key_server_name),
-			context.getString(R.string.settings_server_default_server_name));
+			context.getString(R.string.settings_server_default_server_address));
 	}
 	
 	public Uri getAllGamesUri() {
 		Uri uri = null;
 		// TODO change to acquiring latitude and longitude
-		String params = "games?lat=0&lon=0";
+		SimpleUriTemplateParser uriTemplate = new SimpleUriTemplateParser(getBaseAPI().links.games.href);
+		uriTemplate.putParameter("lat", "0");
+		uriTemplate.putParameter("lon", "0");
 		try {
-			uri = Uri.parse(base + params);
+			uri = Uri.parse(base + uriTemplate.getUri());
 		}
 		catch (Exception e) {
 			uri = Uri.parse(base);

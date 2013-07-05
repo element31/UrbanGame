@@ -30,11 +30,12 @@ import com.blstream.urbangame.database.entity.UrbanGame;
 import com.blstream.urbangame.database.entity.UrbanGameShortInfo;
 import com.blstream.urbangame.database.helper.Base64ImageCoder;
 import com.blstream.urbangame.webserver.ServerResponseHandler;
+import com.blstream.urbangame.webserver.WebResponse;
 import com.blstream.urbangame.webserver.WebServer;
 import com.blstream.urbangame.webserver.WebServerNotificationListener;
 
 /**
- * This is a singleton notifier class. You can implement an observator interface
+ * This is a singleton notifier class. You can implement an observer interface
  * (NotificationListener) when there will appear any change in game or task the
  * observator's interface method will be called. If you don't want to see
  * notifications then comment 3 lines of code in MenuActivity (where
@@ -45,7 +46,7 @@ public class NotificationServer implements WebServerNotificationListener {
 	private final static String TAG = NotificationServer.class.getSimpleName();
 	
 	private static NotificationServer instance;
-	private final List<NotificationListener> observators;
+	private final List<NotificationListener> observers;
 	private final DatabaseInterface database;
 	private final String playerEmail;
 	
@@ -67,7 +68,7 @@ public class NotificationServer implements WebServerNotificationListener {
 	}
 	
 	private NotificationServer(Context context) {
-		this.observators = new ArrayList<NotificationListener>();
+		this.observers = new ArrayList<NotificationListener>();
 		this.context = context;
 		this.mHandler = new Handler();
 		this.database = new Database(context);
@@ -104,24 +105,24 @@ public class NotificationServer implements WebServerNotificationListener {
 	}
 	
 	public void turnOffNotifications() {
-		for (NotificationListener notificationListener : observators) {
+		for (NotificationListener notificationListener : observers) {
 			unregisterNotificationListener(notificationListener);
 		}
 	}
 	
 	public synchronized void registerNotificationListener(NotificationListener notificationListener) {
-		if (observators.isEmpty()) {
+		if (observers.isEmpty()) {
 			startCallback();
 		}
 		
-		if (!observators.contains(notificationListener)) {
-			observators.add(notificationListener);
+		if (!observers.contains(notificationListener)) {
+			observers.add(notificationListener);
 		}
 	}
 	
 	public synchronized void unregisterNotificationListener(NotificationListener notificationListener) {
-		observators.remove(notificationListener);
-		if (observators.isEmpty()) {
+		observers.remove(notificationListener);
+		if (observers.isEmpty()) {
 			cancellCallback();
 		}
 	}
@@ -141,7 +142,7 @@ public class NotificationServer implements WebServerNotificationListener {
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					for (NotificationListener notificationListener : observators) {
+					for (NotificationListener notificationListener : observers) {
 						notificationListener.onGameWon(game);
 					}
 				};
@@ -156,7 +157,7 @@ public class NotificationServer implements WebServerNotificationListener {
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					for (NotificationListener notificationListener : observators) {
+					for (NotificationListener notificationListener : observers) {
 						notificationListener.onGameLost(game);
 					}
 				};
@@ -184,7 +185,7 @@ public class NotificationServer implements WebServerNotificationListener {
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					for (NotificationListener notificationListener : observators) {
+					for (NotificationListener notificationListener : observers) {
 						notificationListener.onGameChanged(oldGame, newGame);
 					}
 				};
@@ -211,7 +212,7 @@ public class NotificationServer implements WebServerNotificationListener {
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					for (NotificationListener notificationListener : observators) {
+					for (NotificationListener notificationListener : observers) {
 						notificationListener.onTaskNew(game, task);
 					}
 				};
@@ -226,7 +227,7 @@ public class NotificationServer implements WebServerNotificationListener {
 			mHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					for (NotificationListener notificationListener : observators) {
+					for (NotificationListener notificationListener : observers) {
 						notificationListener.onTaskChanged(game, oldTask, newTask);
 					}
 				};
@@ -533,6 +534,12 @@ public class NotificationServer implements WebServerNotificationListener {
 		initQueryCountDownTimer(timeToNextQuery);
 	}
 	
+	//**********************//
+	//						//
+	//		M O C K	  END	//
+	//						//
+	//**********************//
+	
 	protected void setWebServerQuery() {
 		noWebServerQuery = false;
 		timeToNextQuery = 3 * 60 * 1000; // 3 minutes
@@ -559,11 +566,13 @@ public class NotificationServer implements WebServerNotificationListener {
 	@Override
 	public void onWebServerResponse(Message message) {
 		mockSimulateNewGameAvailable();
+		WebResponse webResponse = (WebResponse) message.obj;
+		
+		switch (webResponse.queryType) {
+			case DownloadGamesList:
+				break;
+			default:
+				break;
+		}
 	}
-	
-	//**********************//
-	//						//
-	//		M O C K	  END	//
-	//						//
-	//**********************//
 }
